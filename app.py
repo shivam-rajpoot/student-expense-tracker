@@ -86,7 +86,7 @@ if st.session_state.user is None:
                 c.execute("INSERT INTO audit_logs VALUES (NULL,?,?,?)",
                           (user[0], 'LOGIN', datetime.now()))
                 conn.commit()
-                st.experimental_rerun()
+                st.rerun()
             else:
                 st.error("Invalid credentials")
 
@@ -123,7 +123,7 @@ role = st.session_state.user['role']
 st.sidebar.success(f"Logged in as {role.upper()}")
 if st.sidebar.button("Logout", key="logout_btn"):
     st.session_state.user = None
-    st.experimental_rerun()
+    st.rerun()
 
 # ================= STUDENT DASHBOARD =================
 if role == 'student':
@@ -179,7 +179,7 @@ if role == 'student':
                 c.execute("INSERT INTO audit_logs VALUES (NULL,?,?,?)",
                           (user_id, 'DELETE_EXPENSE', datetime.now()))
                 conn.commit()
-                st.experimental_rerun()
+                st.rerun()
 
 # ================= OWNER DASHBOARD =================
 if role == 'owner':
