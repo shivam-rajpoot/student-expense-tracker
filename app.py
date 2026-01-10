@@ -1,20 +1,20 @@
-================= STUDENT EXPENSE TRACKER – PRODUCTION EDITION =================
+#================= STUDENT EXPENSE TRACKER – PRODUCTION EDITION =================
 
-✅ Enterprise‑grade Streamlit App
+# Enterprise‑grade Streamlit App
 
-✅ ZERO widget ID conflicts
+# ZERO widget ID conflicts
 
-✅ Advanced Analytics + AI‑style Insights
+# Advanced Analytics + AI‑style Insights
 
-✅ Mobile‑like UX Polish
+# Mobile‑like UX Polish
 
 import streamlit as st import sqlite3, hashlib import pandas as pd from datetime import date, datetime, timedelta import matplotlib.pyplot as plt import numpy as np
 
-================= PAGE CONFIG =================
+# ================= PAGE CONFIG =================
 
 st.set_page_config(page_title="Student Expense Tracker – Pro", page_icon="💎", layout="wide")
 
-================= DATABASE =================
+# ================= DATABASE =================
 
 conn = sqlite3.connect("expense_tracker.db", check_same_thread=False) c = conn.cursor()
 
@@ -24,31 +24,31 @@ c.execute(""" CREATE TABLE IF NOT EXISTS expenses ( id INTEGER PRIMARY KEY AUTOI
 
 c.execute(""" CREATE TABLE IF NOT EXISTS limits ( user_id INTEGER UNIQUE, weekly REAL, monthly REAL ) """) conn.commit()
 
-================= UTIL =================
+# ================= UTIL =================
 
 def hash_pwd(p): return hashlib.sha256(p.encode()).hexdigest()
 
-================= SESSION =================
+# ================= SESSION =================
 
 if "user" not in st.session_state: st.session_state.user = None
 
-================= OWNER SETUP =================
+# ================= OWNER SETUP =================
 
 if c.execute("SELECT COUNT(*) FROM users WHERE role='owner'").fetchone()[0]==0: st.title("🔐 Owner First‑Time Setup") oid=st.text_input("Owner ID",key="oid") op=st.text_input("Password",type="password",key="op") if st.button("Create Owner",key="oc"): c.execute("INSERT INTO users VALUES(NULL,?,?,?,?)",(oid,hash_pwd(op),"owner",datetime.now().isoformat())) conn.commit(); st.success("Restart app"); st.stop()
 
-================= LOGIN =================
+# ================= LOGIN =================
 
 st.title("🎓 Student Expense Tracker – Pro")
 
 if st.session_state.user is None: t1,t2,t3=st.tabs(["Login","Register","Reset"]) with t1: u=st.text_input("User ID",key="lu") p=st.text_input("Password",type="password",key="lp") if st.button("Login",key="lb"): r=c.execute("SELECT id,role FROM users WHERE student_id=? AND password_hash=?",(u,hash_pwd(p))).fetchone() if r: st.session_state.user={"id":r[0],"role":r[1]}; st.rerun() else: st.error("Invalid") with t2: ru=st.text_input("Student ID",key="ru") rp=st.text_input("Password",type="password",key="rp") if st.button("Register",key="rb"): try: c.execute("INSERT INTO users VALUES(NULL,?,?,?,?)",(ru,hash_pwd(rp),"student",datetime.now().isoformat())); conn.commit(); st.success("Registered") except: st.error("Exists") with t3: fu=st.text_input("Student ID",key="fu") fp=st.text_input("New Password",type="password",key="fp") if st.button("Reset",key="fb"): c.execute("UPDATE users SET password_hash=? WHERE student_id=?",(hash_pwd(fp),fu)); conn.commit(); st.success("Reset done") st.stop()
 
-================= DASHBOARD =================
+# ================= DASHBOARD =================
 
 uid=st.session_state.user['id']; role=st.session_state.user['role']
 
 st.sidebar.success(f"Logged as {role}") if st.sidebar.button("Logout",key="lo"): st.session_state.user=None; st.rerun()
 
-================= STUDENT =================
+# ================= STUDENT =================
 
 if role=="student": nav=st.radio("",["📊 Dashboard","➕ Add","🤖 AI","👤 Profile"],horizontal=True,key="nav")
 
@@ -62,6 +62,6 @@ if nav=="🤖 AI": st.subheader("🧠 AI Spending Personality") if df.empty: st.
 
 if nav=="👤 Profile": st.subheader("👤 Profile – Premium") cnt=len(df); st.metric("🧾 Total Expenses",cnt) st.progress(min(cnt/20,1.0)) st.subheader("🏅 Badges") if cnt>=1: st.success("First Expense") if cnt>=10: st.success("Consistent Tracker")
 
-================= OWNER =================
+# ================= OWNER =================
 
 if role=="owner": st.header("🔍 Owner Risk Dashboard") lb=pd.read_sql_query("SELECT u.student_id,COUNT(e.id) cnt,COALESCE(SUM(e.amount),0) total FROM users u LEFT JOIN expenses e ON u.id=e.user_id WHERE u.role='student' GROUP BY u.id",conn) if not lb.empty: lb['Risk']=np.where(lb.total>5000,"High","Normal") st.dataframe(lb) st.subheader("🧠 AI Insight") st.info("High spenders flagged anonymously")
