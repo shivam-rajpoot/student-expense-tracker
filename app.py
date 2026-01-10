@@ -79,7 +79,7 @@ if st.session_state.user is None:
 
     with tab1:
         uid = st.text_input("User ID")
-        pwd = st.text_input("Password", type="password")
+        pwd = st.text_input("Password", type="password", key="login_pass")
         if st.button("Login"):
             u = c.execute("SELECT id,role FROM users WHERE student_id=? AND password_hash=?",
                           (uid, hash_pwd(pwd))).fetchone()
@@ -91,7 +91,7 @@ if st.session_state.user is None:
 
     with tab2:
         sid = st.text_input("Student ID")
-        spwd = st.text_input("Password", type="password")
+        spwd = st.text_input("Password", type="password", key="reg_pass")
         if st.button("Register"):
             try:
                 c.execute("INSERT INTO users VALUES (NULL,?,?,?,?)",
@@ -103,7 +103,7 @@ if st.session_state.user is None:
 
     with tab3:
         rid = st.text_input("Student ID")
-        npwd = st.text_input("New Password", type="password")
+        npwd = st.text_input("New Password", type="password", key="reset_pass")
         if st.button("Reset Password"):
             role = c.execute("SELECT role FROM users WHERE student_id=?", (rid,)).fetchone()
             if role and role[0]=="student":
