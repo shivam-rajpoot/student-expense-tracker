@@ -186,3 +186,4 @@ if role == "owner":
         ax.text(0.5,0.6,"CERTIFICATE OF ACHIEVEMENT",ha='center',fontsize=18,weight='bold')
         ax.text(0.5,0.4,champ['student_id'],ha='center',fontsize=14)
         st.pyplot(fig)
+    
